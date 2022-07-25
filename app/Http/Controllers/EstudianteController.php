@@ -11,11 +11,14 @@ use App\Models\Turno;
 use App\Models\Techo;
 use App\Models\MontoMensual;
 use App\Models\DatoSocioeconomico;
+use App\Models\StatusEstudiante;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\File;
 use PDF;
-use Dompdf\Dompdf;
+use Dompdf\Dompdf;  
 use DOMDocument;
+use App\Http\Requests\EstudianteUpdateRequest;
+
 
 class EstudianteController extends Controller
 {
@@ -144,7 +147,7 @@ class EstudianteController extends Controller
             'img_comprobante_dom' => ['required_with:alpha_dash', 'max:2000'],
             'img_identificacion' => ['required_with:alpha_dash', 'max:2000'],
             'img_kardex' => ['required_with:alpha_dash', 'max:2000'],
-            'img_constacia' => ['required_with:alpha_dash', 'max:2000'],
+            'img_constancia' => ['required_with:alpha_dash', 'max:2000'],
         ]);
 
         $actaCargada = false;
@@ -153,7 +156,11 @@ class EstudianteController extends Controller
         $kardexCargado = false;
         $constanciaCargada = false;
 
+        $extCurp = "ext";
+
         $estudiante = $request->session()->get('estudiante');
+
+        //if ($actaCargada) $extActa = $request->img_acta_nac->getClientOriginalExtension();
 
         if (isset($request->img_acta_nac) || (isset($estudiante) && $estudiante->img_acta_nac == "ACTA_OK.pdf")) $actaCargada = true;
         if (isset($request->img_comprobante_dom) || (isset($estudiante) && $estudiante->img_comprobante_dom == "COMPROBANTE_OK.pdf")) $comprobanteCargado = true;
@@ -161,9 +168,18 @@ class EstudianteController extends Controller
         if (isset($request->img_kardex) || (isset($estudiante) && $estudiante->img_kardex == "KARDEX_OK.pdf")) $kardexCargado = true;
         // if (isset($request->img_constancia) || (isset($estudiante) && $estudiante->img_constancia == "CONSTANCIA_OK.pdf")) $constanciaCargada = true;
 
-        if (isset($request->img_curp)) $fileCurp = true;
-        else $fileCurp = false;
-        
+        if (isset($request->img_curp)) 
+        {
+            $fileCurp = true;
+            $extCurp = strtoupper($request->img_curp->getClientOriginalExtension());
+        }
+        else 
+        {
+            $fileCurp = false;
+            $extCurp = strtoupper(substr(strrchr($request->curp_hidden, "."), 1));
+        }
+
+        //dd($extCurp);
         if ($actaCargada) $extActa = "pdf";
         else $extActa = substr(strrchr($request->acta_hidden, "."), 1);
         if ($comprobanteCargado) $extComprobante = "pdf";
@@ -175,13 +191,58 @@ class EstudianteController extends Controller
         // if ($constanciaCargada) $extConstancia = "pdf";
         // else $extConstancia = substr(strrchr($request->constancia_hidden, "."), 1);
 
-        $message = '<b>INFORMACIÓN FALTANTE: </b> <ul>';
+        if (isset($request->img_acta_nac)) $extActa = strtoupper($request->img_acta_nac->getClientOriginalExtension());
+        if (isset($request->img_comprobante_dom)) $extComprobante = strtoupper($request->img_comprobante_dom->getClientOriginalExtension());
+        if (isset($request->img_identificacion)) $extIdentificacion = strtoupper($request->img_identificacion->getClientOriginalExtension());
+        if (isset($request->img_kardex)) $extKardex = strtoupper($request->img_kardex->getClientOriginalExtension());
+        // if (isset($request->img_constancia)) $extConstancia = strtoupper($request->img_constancia->getClientOriginalExtension());
+
+        $message = '<b>ERROR(ES) EN LA INFORMACIÓN: </b> <ul>';
+        $errorCurp = false;
         $errorActa = false;
         $errorComprobante = false;
         $errorIdentificacion = false;
         $errorKardex = false;
         $errorConstancia = false;
 
+        //+++++++++++++++++++++++ VALIDACIÓN DE ARCHIVOS PDF ++++++++++++++++++++++++++++++
+        if ($extCurp != "PDF")
+        {
+            //$message = $message . "<li>El archivo del <b>CURP</b> debe ser PDF.</li>";
+            $errorCurp = true;
+        }
+        if ($extActa != "PDF")
+        {
+            $message = $message . "<li>El archivo del <b>ACTA DE NACIMIENTO</b> debe ser PDF.</li>";
+            $errorActa = true;
+        }
+        if ($extComprobante != "PDF")
+        {
+            $message = $message . "<li>El archivo del <b>COMPROBANTE DE DOMICILIO</b> debe ser PDF.</li>";
+            $errorComprobante = true;
+        }
+        if ($extIdentificacion != "PDF")
+        {
+            $message = $message . "<li>El archivo de la <b>IDENTIFICACIÓN OFICIAL</b> debe ser PDF.</li>";
+            $errorIdentificacion = true;
+        }
+        if ($extKardex != "PDF")
+        {
+            $message = $message . "<li>El archivo del <b>KARDEX</b> debe ser PDF.</li>";
+            $errorKardex = true;
+        }
+        // if ($extConstancia != "PDF")
+        // {
+        //     $message = $message . "<li>El archivo de la <b>CONSTANCIA DE ESTUDIOS</b> debe ser PDF.</li>";
+        //     $errorConstancia = true;
+        // }
+
+        // if ($errorCurp || $errorActa || $errorComprobante || $errorIdentificacion || $errorKardex || $errorConstancia)
+        // {
+        //     return redirect()->back()->with('message', $message);
+        // }
+
+        //++++++++++++++++++++ VALIDACIÓN DE CAMPOS OBLIGATORIOS +++++++++++++++++++++
         if (!$actaCargada && $request->acta_hidden == "#acta#")
         {
             $message = $message . "<li>El <b>ACTA DE NACIMIENTO</b> es obligatoria.</li>";
@@ -207,7 +268,17 @@ class EstudianteController extends Controller
         //     $message = $message . "<li>La <b>CONSTANCIA</b> es obligatoria.</li>";
         //     $errorConstancia = true;
         // }
+
         $message = $message . "</ul>";
+
+        if ($errorCurp)
+        {
+            $message = '<b>ERROR(ES) EN LA INFORMACIÓN: </b> <ul>';
+            $message = $message . "<li>El archivo del <b>CURP</b> debe ser PDF.</li>";
+            $message = $message . "</ul>";
+            $message = $message . "NOTA: Todos los campos son <b>obligatorios</b> y debes subir <b>archivos PDF</b>.";
+            return redirect()->back()->with('message', $message);
+        }
 
         if ($this->esValidoArchivoCURP($request->img_curp, $rfc, $fileCurp)) //Valida que el PDF cargado sea el esperado
         {
@@ -289,7 +360,7 @@ class EstudianteController extends Controller
             //     $archivo = 'CN_' . $rfc . '.' . $extConstancia;
             //     $request->img_constancia->move('img/constancias', $archivo);
             // }
-            if ($errorActa || $errorComprobante || $errorIdentificacion || $errorKardex || $errorConstancia) return redirect()->back()->with('message', $message);
+            if ($errorCurp || $errorActa || $errorComprobante || $errorIdentificacion || $errorKardex || $errorConstancia) return redirect()->back()->with('message', $message);
 
             $request->session()->put('f2', true);
             return redirect()->route('estudiantes.formulario2');
@@ -533,7 +604,7 @@ class EstudianteController extends Controller
 
         $socioeconomico = $request->session()->get('socioeconomico');
         $techos = Techo::all();
-        $montos = MontoMensual::all();
+        $montos = MontoMensual::all(); 
         if ($f4) return view('estudiantes/formulario4', compact('socioeconomico','techos', 'montos'));
         else return view('estudiantes/operacion_invalida');  
     }
@@ -658,5 +729,120 @@ class EstudianteController extends Controller
             return view('estudiantes.registro', compact('estudiante', 'socioeconomico'));
         }
         else return view('estudiantes/operacion_invalida'); 
+    }
+
+    public function index()
+    {
+        $estudiantes = Estudiante::all();
+        return view('estudiantes.index', compact('estudiantes'));
+    }
+
+    public function edit($id)
+    {
+        $estudiante = Estudiante::where('id', $id)->first();
+        $localidades = Localidad::orderBy('localidad', 'ASC')->get();
+        $escuelas = Escuela::where('cve_escuela', '!=', '999')->orderBy('escuela_abreviatura', 'ASC')->get();
+        $ciudades = Ciudad::all();
+        $turnos = Turno::all();
+        return view('estudiantes.edit', compact('estudiante', 'localidades', 'escuelas', 'ciudades', 'turnos'));
+    }
+
+    public function update(EstudianteUpdateRequest $request, $id)
+    {
+        $estudiante = Estudiante::findorfail($id);
+
+        $rfc = substr($request->curp, 0, 10);
+
+        $archivoCurp = $request->curp_hidden;
+        $archivoActa = $request->acta_hidden;
+        $archivoComprobante = $request->comprobante_hidden;
+        $archivoIdentificacion = $request->identificacion_hidden;
+        $archivoKardex = $request->kardex_hidden;
+        $archivoConstancia = $request->constancia_hidden;
+
+        //Sólo se copiarán los archivos únicamente cuando estén cargados en el input
+        if (isset($request->img_curp)) 
+        {
+            $extCurp = $request->img_curp->getClientOriginalExtension();
+            $archivoCurp = 'CU_' . $rfc . '.' . $extCurp;
+            $request->img_curp->move('img/curps', $archivoCurp);
+        }
+        if (isset($request->img_acta_nac)) 
+        {
+            $extActa = $request->img_acta_nac->getClientOriginalExtension();
+            $archivoActa = 'AC_' . $rfc . '.' . $extActa;
+            $request->img_acta_nac->move('img/actas', $archivoActa);
+        } 
+        if (isset($request->img_comprobante_dom)) 
+        {
+            $extComprobante = $request->img_comprobante_dom->getClientOriginalExtension();
+            $archivoComprobante = 'CO_' . $rfc . '.' . $extComprobante;
+            $request->img_comprobante_dom->move('img/comprobantes', $archivoComprobante);
+        }
+        if (isset($request->img_identificacion)) 
+        {
+            $extIdentificacion = $request->img_identificacion->getClientOriginalExtension();
+            $archivoIdentificacion = 'ID_' . $rfc . '.' . $extIdentificacion;
+            $request->img_identificacion->move('img/identificaciones', $archivoIdentificacion);
+        }
+        if (isset($request->img_kardex)) 
+        {
+            $extKardex = $request->img_kardex->getClientOriginalExtension();
+            $archivoKardex = 'ID_' . $rfc . '.' . $extKardex;
+            $request->img_kardex->move('img/kardex', $archivoKardex);
+        } 
+        if (isset($request->img_constancia)) 
+        {
+            $extConstancia = $request->img_constancia->getClientOriginalExtension();
+            $archivoConstancia = 'CN_' . $rfc . '.' . $extConstancia;
+            $request->img_constancia->move('img/constancias', $archivoConstancia);
+        } 
+
+        $estudiante->update([
+            'nombre' => trim(mb_strtoupper($request->nombre)),
+            'primer_apellido' => trim(mb_strtoupper($request->primer_apellido)),
+            'segundo_apellido' => trim(mb_strtoupper($request->segundo_apellido)),
+            'curp' => trim(mb_strtoupper($request->curp)),
+            'rfc' => $rfc,
+            'fecha_nac' => $request->fecha_nac,
+            'celular' => $request->celular,
+            'email' => trim(mb_strtolower($request->email)),
+            'cve_localidad_origen' => $request->cve_localidad_origen,
+            'cve_localidad_actual' => $request->cve_localidad_actual,
+            'cve_ciudad_escuela' => $request->cve_ciudad_escuela,
+            'cve_escuela' => $request->cve_escuela,
+            'cve_turno_escuela' => $request->cve_turno_escuela,
+            'carrera' => trim(mb_strtoupper($request->carrera)),
+            'ano_escolar' => $request->ano_escolar,
+            'promedio' => $request->promedio,
+            'img_curp' => $archivoCurp,
+            'img_acta_nac' => $archivoActa,
+            'img_comprobante_dom' => $archivoComprobante,
+            'img_identificacion' => $archivoIdentificacion,
+            'img_kardex' => $archivoKardex,
+            'img_constancia' => $archivoConstancia,
+        ]);
+
+        return redirect()->back()->with('message', 'Información ACTUALIZADA con éxito!')->with('msg_type', 'success');
+    }
+
+    public function edit_status($id)
+    {
+        $estudiante = Estudiante::where('id', $id)->first();
+        $escuelas = Escuela::where('cve_escuela', '!=', '999')->orderBy('escuela_abreviatura', 'ASC')->get();
+        $ciudades = Ciudad::all();
+        $status = StatusEstudiante::all();
+        return view('estudiantes.edit_status', compact('estudiante', 'escuelas', 'ciudades', 'status'));
+    }
+
+    public function update_status(Request $request, $id)
+    {
+        $estudiante = Estudiante::findorfail($id);
+
+        $estudiante->update([
+            'cve_status' => $request->cve_status
+        ]);
+
+        return redirect()->route('estudiantes.index')->with('message', 'Estatus ACTUALIZADO con éxito!')->with('msg_type', 'success');
     }
  }

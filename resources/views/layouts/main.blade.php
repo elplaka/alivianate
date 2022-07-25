@@ -9,7 +9,7 @@
     <meta name="description" content="">
     <meta name="author" content="">
 
-    <title>Sistema de Expediente Digital</title>
+    <title>Sistema ALIVIAN4TE</title>
 
     <!-- Custom fonts for this template-->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.1.1/css/all.min.css" integrity="sha512-KfkfwYDsLkIlwQp6LFnl8zNdLGxu9YAA1QvwINks4PhcElQSvqcyVLLD9aMhXd13uQjoXtEKNosOWaZqXgel0g==" crossorigin="anonymous" referrerpolicy="no-referrer" />
@@ -22,6 +22,83 @@
     <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
     
 </head>
+
+<script>
+    $(document).ready( function() {
+
+        $('#sel_archivo_curp').click(function(){
+        $('#img_curp').trigger('click');
+        $('#img_curp').change(function() {
+            var filename = $('#img_curp').val();
+            if (filename.substring(3,11) == 'fakepath')
+            {
+                filename = filename.substring(12);
+            } // Remove c:\fake at beginning from localhost chrome
+            $('#archivo_curp').html(filename);
+            });
+        });
+
+        $('#sel_archivo_acta_nac').click(function(){
+        $('#img_acta_nac').trigger('click');
+        $('#img_acta_nac').change(function() {
+            var filename = $('#img_acta_nac').val();
+            if (filename.substring(3,11) == 'fakepath')
+            {
+                filename = filename.substring(12);
+            } // Remove c:\fake at beginning from localhost chrome
+            $('#archivo_acta_nac').html(filename);
+            });
+        });
+
+        $('#sel_archivo_comprobante_dom').click(function(){
+        $('#img_comprobante_dom').trigger('click');
+        $('#img_comprobante_dom').change(function() {
+            var filename = $('#img_comprobante_dom').val();
+            if (filename.substring(3,11) == 'fakepath')
+            {
+                filename = filename.substring(12);
+            } // Remove c:\fake at beginning from localhost chrome
+            $('#archivo_comprobante_dom').html(filename);
+            });
+        });
+
+        $('#sel_archivo_identificacion').click(function(){
+        $('#img_identificacion').trigger('click');
+        $('#img_identificacion').change(function() {
+            var filename = $('#img_identificacion').val();
+            if (filename.substring(3,11) == 'fakepath')
+            {
+                filename = filename.substring(12);
+            } // Remove c:\fake at beginning from localhost chrome
+            $('#archivo_identificacion').html(filename);
+            });
+        });
+
+        $('#sel_archivo_kardex').click(function(){
+        $('#img_kardex').trigger('click');
+        $('#img_kardex').change(function() {
+            var filename = $('#img_kardex').val();
+            if (filename.substring(3,11) == 'fakepath')
+            {
+                filename = filename.substring(12);
+            } // Remove c:\fake at beginning from localhost chrome
+            $('#archivo_kardex').html(filename);
+            });
+        });
+
+        $('#sel_archivo_constancia').click(function(){
+        $('#img_constancia').trigger('click');
+        $('#img_constancia').change(function() {
+            var filename = $('#img_constancia').val();
+            if (filename.substring(3,11) == 'fakepath')
+            {
+                filename = filename.substring(12);
+            } // Remove c:\fake at beginning from localhost chrome
+            $('#archivo_constancia').html(filename);
+            });
+        });
+});
+</script>
 
 <body id="page-top">
 
@@ -36,7 +113,7 @@
                     {{-- <i class="fas fa-laugh-wink"></i> --}}
                     <img src="/img/icono.png" alt="Por tiempos mejores" style="width:50px">
                 </div>
-                <div class="sidebar-brand-text mx-3">SED <sup> 2124</sup></div>
+                <div class="sidebar-brand-text mx-3">ALIVIAN4TE </div>
             </a>
 
             <!-- Divider -->
@@ -53,48 +130,52 @@
             <!-- Divider -->
             <hr class="sidebar-divider">
 
-            <!-- Nav Item - Employees -->
+            <!-- Nav Item - Estudiantes -->
             <li class="nav-item">
+                <a class="nav-link" href="{{ route('estudiantes.index') }}">
+                    <img src="/img/iconousuarios.png" alt="Estudiantes" style="width:25px">
+                    <span>Estudiantes</span></a>
+            </li>
+            {{-- <li class="nav-item">
                 <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapseSystem"
                 aria-expanded="true" aria-controls="collapseSystem">
-                {{-- <i class="fas fa-fw fa-cog"></i> --}}
-                <img src="/img/iconousuarios.png" alt="Empleados" style="width:25px">
-                    <span>Empleados</span>
+                <img src="/img/iconousuarios.png" alt="Estudiantes" style="width:25px">
+                    <span>Estudiantes</span>
                 </a>
                 <div id="collapseSystem" class="collapse" aria-labelledby="headingTwo" data-parent="#accordionSidebar">
-                    <div class="bg-white py-2 collapse-inner rounded">
+                    <div class="bg-white py-2 collapse-inner rounded"> --}}
                         {{-- <h6 class="collapse-header">Custom Components:</h6> --}}
                         {{-- <a class="collapse-item" href="{{ route('countries.index') }}">Country</a>
                         <a class="collapse-item" href="{{ route('states.index') }}">State</a>
                         <a class="collapse-item" href="{{ route('cities.index') }}">City</a>
                         <a class="collapse-item" href="{{ route('departments.index') }}">Department</a> --}}
-                        <a class="collapse-item" href="{{ route('empleados.create') }}">Nuevo</a>
-                        <a class="collapse-item" href="{{ route('empleados.index') }}">Buscar</a>
+                        {{-- <a class="collapse-item" href="{{ route('empleados.create') }}">Nuevo</a>
+                        <a class="collapse-item" href="{{ route('empleados.index') }}">Buscar</a> --}}
                         {{-- <a class="collapse-item" href="{{ route('empleados.index') }}">Buscar</a>
                         <a class="collapse-item" href="/">Department</a>  --}}
-                    </div>
+                    {{-- </div>
                 </div>
-            </li>
+            </li> --}}
 
-
+{{-- 
             @if (Auth::user()->usertype == 1)  
              <!-- Divider -->
-            <hr class="sidebar-divider">
+            <hr class="sidebar-divider"> --}}
 
 
              
-            <li class="nav-item">
+            {{-- <li class="nav-item">
                 <a class="nav-link" href="{{ route('usuarios.index') }}">
                     <i class="fas fa-dot-circle"></i>
                     <span>Usuarios</span></a>
-            </li>
-            @endif
+            </li> --}}
+            {{-- @endif
 
             <!-- Divider -->
-            <hr class="sidebar-divider">
+            <hr class="sidebar-divider"> --}}
 
 
-            @if (Auth::user()->usertype != 2)    
+            {{-- @if (Auth::user()->usertype != 2)    
             <li class="nav-item">
                 <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapseSystem2"
                 aria-expanded="true" aria-controls="collapseSystem2">
@@ -103,12 +184,12 @@
                 </a>
                 <div id="collapseSystem2" class="collapse" aria-labelledby="headingTwo" data-parent="#accordionSidebar">
                     <div class="bg-white py-2 collapse-inner rounded">
-                        <a class="collapse-item" href="{{ route('areas.index') }}">Dependencias </a>
-                        <a class="collapse-item" href="{{ route('dias_descanso.index') }}">Días de descanso</a>
-                    </div>
+                        {{-- <a class="collapse-item" href="{{ route('areas.index') }}">Dependencias </a>
+                        <a class="collapse-item" href="{{ route('dias_descanso.index') }}">Días de descanso</a> --}}
+                    {{-- </div>
                 </div>
             </li>
-            @endif
+            @endif --}}
 
 
 

@@ -17,6 +17,10 @@ use App\Models\Estudiante;
 |
 */
 
+Auth::routes();
+
+Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name('home');
+
 Route::get('/estudiantes/forget', [EstudianteController::class, 'forget'])->name('estudiantes.forget');
 
 Route::get('/', function () {
@@ -56,9 +60,15 @@ Route::get('/estudiantes/mail_confirmacion/{id_estudiante}', function($id_estudi
     else return view('estudiantes/operacion_invalida');
 })->name('estudiantes.mail_confirmacion');
 
-Auth::routes();
+Route::get('/estudiantes/index', [EstudianteController::class, 'index'])->name('estudiantes.index');
+Route::get('/estudiantes/edit/{id}', [EstudianteController::class, 'edit'])->name('estudiantes.edit');
+Route::post('/estudiantes/update/{id}', [EstudianteController::class, 'update'])->name('estudiantes.update');
+Route::get('/estudiantes/edit_status/{id}', [EstudianteController::class, 'edit_status'])->name('estudiantes.edit_status');
+Route::post('/estudiantes/update_status/{id}', [EstudianteController::class, 'update_status'])->name('estudiantes.update_status');
 
-// Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name('home');
+
+
+
 
 // Route::post('/estudiantes', [App\Http\Controllers\EstudianteController::class, 'store'])->name('estudiantes.store');
 

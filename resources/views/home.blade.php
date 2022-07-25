@@ -1,9 +1,15 @@
-@extends('layouts.app')
+@extends('layouts.main')
 
+<style>
+    img {
+  opacity: 0.95;
+}
+</style>
 @section('content')
-<div class="container">
-    <div class="row justify-content-center">
-        <div class="col-md-8">
+
+<div class="d-flex align-items-center">
+    <div class="d-flex align-items-center">
+        {{-- <div class="col-md-8">
             <div class="card">
                 <div class="card-header">{{ __('Dashboard') }}</div>
 
@@ -17,7 +23,8 @@
                     {{ __('You are logged in!') }}
                 </div>
             </div>
-        </div>
+        </div> --}}
+        <img src="img/logo.png" alt="Por tiempos mejores" style="width:100%">
     </div>
 </div>
 @endsection

@@ -8,6 +8,7 @@ use App\Models\Localidad;
 use App\Models\DatoSocioeconomico;
 use App\Models\Escuela;
 use App\Models\Ciudad;
+use App\Models\StatusEstudiante;
 
 class Estudiante extends Model
 {
@@ -18,6 +19,7 @@ class Estudiante extends Model
         'primer_apellido',     
         'segundo_apellido',   
         'curp', 
+        'rfc',
         'fecha_nac',               
         'celular',            
         'email',               
@@ -33,7 +35,8 @@ class Estudiante extends Model
         'img_acta_nac',        
         'img_comprobante_dom', 
         'img_identificacion',  
-        'img_kardex'
+        'img_kardex',
+        'cve_status'
     ];  
 
 
@@ -65,5 +68,10 @@ class Estudiante extends Model
     public function turno()
     {
         return $this->belongsTo(Turno::class, 'cve_turno_escuela');
+    }
+
+    public function status()
+    {
+        return $this->belongsTo(StatusEstudiante::class, 'cve_status');
     }
 }
