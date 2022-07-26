@@ -6,8 +6,6 @@
 ?>
 @section('content')
     <!-- Page Heading -->
-
-
     <div class="container-fluid">
         <div class="card mx-auto">
             <?php  
@@ -34,10 +32,10 @@
                         </div>
                         <form method="GET" action="{{ route('estudiantes.index') }}">
                             <div class="form-row align-items-center">
-                                <div class="col">
-                                    <input type="search" name="search" class="form-control mb-2" id="inlineFormInput">
+                                <div class="col-md-3">
+                                    <input type="search" name="search" class="form-control mb-2" id="inlineFormInput" value="{{ old('search', $searchR) }}">
                                 </div>
-                                <div class="col">
+                                <div class="col-md-3">
                                     <button type="submit" class="btn btn-primary mb-2"> Buscar </button>
                                 </div>
                             </div>
@@ -52,18 +50,12 @@
                       <tr>
                         <th class="col-md-auto">#</th>
                         <th class="col-sm-4">Nombre</th>
-                        <th class="col-sm-3">Escuela - Ciudad</th>
+                        <th class="col-sm-2">Escuela - Ciudad</th>
                         <th class="col-sm-3">Carrera</th>
                         <th class="col-md-auto"></th>
                       </tr>
                     </thead>
-                    {{-- #ff0000 --}}
-                    {{-- #cc3300 --}}
-                    {{-- #996600 --}}
-                    {{-- #669900 --}}
-                    {{-- #33cc00 --}}
-                    {{-- #00ff00 --}}
-                    <tbody>
+                     <tbody>
                         @foreach ($estudiantes as $estudiante)
                             <?php
                                 if ($estudiante->cve_ciudad_escuela == 1) $ciudadEscuela = "MZT";
@@ -72,22 +64,22 @@
 
                                 switch ($estudiante->cve_status)
                                 {
-                                    case 1: 
+                                    case 1:   //RECIBIDO
                                         $color = "#9944d9"; 
                                         break;
-                                    case 2: 
+                                    case 2:  //REVISADO
                                         $color = "#0071bc";
                                         break; 
-                                    case 3: 
+                                    case 3: //CENSADO
                                         $color = "#7dc3f5";
                                         break; 
-                                    case 4: 
+                                    case 4: //RECHAZADO
                                         $color = "#ff0000";
                                         break;
-                                    case 5: 
+                                    case 5: //PENDIENTE
                                         $color = "#ffe26e";
                                         break; 
-                                    case 6:
+                                    case 6: //ACEPTADO
                                         $color = "#00ff00";
                                         break;               
                                 }
@@ -97,7 +89,7 @@
                                 <td style="vertical-align:middle">{{ $estudiante->nombre . ' ' . $estudiante->primer_apellido . ' ' . $estudiante->segundo_apellido }} &nbsp;</td>
                                 <td style="vertical-align:middle">{{ $estudiante->escuela->escuela_abreviatura }} <i class="fas fa-map-marker-alt"></i> {{ $ciudadEscuela }} &nbsp;</td>
                                 <td style="vertical-align:middle">{{ $estudiante->carrera }} &nbsp;</td>
-                                <td style="vertical-align:middle"> <a href="{{ route('estudiantes.edit', $estudiante->id) }}" title="Editar" class="btn btn-success"><i class="fas fa-user-edit"></i></a> <a href="{{ route('estudiantes.edit_status', $estudiante->id) }}" title="Cambiar estatus" class="btn btn-danger"><i class="fas fa-flag"></i></a>  <a href="{{ route('estudiantes.edit', $estudiante->id) }}" title="Censar" class="btn btn-primary"><i class="fas fa-street-view"></i></a> </td>
+                                <td style="vertical-align:middle"> <a href="{{ route('estudiantes.edit', $estudiante->id) }}" title="Editar" class="btn btn-success btn-sm"><i class="fas fa-user-edit"></i></a> <a href="{{ route('estudiantes.edit_status', $estudiante->id) }}" title="Cambiar estatus" class="btn btn-danger btn-sm"><i class="fas fa-flag"></i></a> @if ($estudiante->cve_status >= 2) <a href="{{ route('estudiantes.edit_se', $estudiante->id) }}" title="Censar" class="btn btn-primary btn-sm"><i class="fas fa-street-view"></i></a> @endif <a href="{{ route('estudiantes.registro_pdf_post', $estudiante->id_hex) }}" title="Imprimir" class="btn btn-info btn-sm"><i class="fas fa-print"></i></a></td>
                             </tr> 
                             <?php 
                             ?>                         

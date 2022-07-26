@@ -10,7 +10,7 @@
                     </div> 
                     <div class="card">
                         <div class="card-body">
-                            <form class="contact-form" method="POST" action="{{ route('estudiantes.update_status', $estudiante->id) }}" enctype="multipart/form-data" novalidate>
+                            <form class="contact-form" method="POST" action="{{ route('estudiantes.update_status', $estudiante->id) }}">
                                 @csrf
                                 <div class="row justify-content-center mb-0">
                                     <h1 class="h3 mb-4 text-gray-800"> <b>{{ __('Cambiar Estatus del Estudiante') }} </b> </h1>
@@ -51,6 +51,10 @@
                                             </div>
                                             <div class="row mb-0">
                                                 <label class="col-md-4 col-form-label             text-md-right">Escuela:<b> </label><div class="col-md-8"> <label class="col-form-label text-md-left">  {{ $estudiante->escuela->escuela }}</b>
+                                                </label></div>
+                                            </div>
+                                            <div class="row mb-0">
+                                                <label class="col-md-4 col-form-label             text-md-right">Carrera:<b> </label><div class="col-md-8"> <label class="col-form-label text-md-left">  {{ $estudiante->carrera }}</b>
                                                 </label></div>
                                             </div>
                                             <div class="row mb-1">

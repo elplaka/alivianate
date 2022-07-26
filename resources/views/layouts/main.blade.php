@@ -20,7 +20,6 @@
     <!-- Custom styles for this template-->
     <link href="{{ asset('css/sb-admin.min.css')}}" rel="stylesheet">
     <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
-    
 </head>
 
 <script>
@@ -118,24 +117,18 @@
 
             <!-- Divider -->
             <hr class="sidebar-divider my-0">
-            
 
-            <!-- Nav Item - Dashboard -->
-            {{-- <li class="nav-item active">
-                <a class="nav-link" href="index.html">
-                    <i class="fas fa-fw fa-tachometer-alt"></i>
-                    <span>Dashboard</span></a>
-            </li> --}}
-
-            <!-- Divider -->
+           <!-- Divider -->
             <hr class="sidebar-divider">
 
             <!-- Nav Item - Estudiantes -->
+            @if (Auth::user()->usertype >= 1)  
             <li class="nav-item">
                 <a class="nav-link" href="{{ route('estudiantes.index') }}">
-                    <img src="/img/iconousuarios.png" alt="Estudiantes" style="width:25px">
-                    <span>Estudiantes</span></a>
+                    <i class="fas fa-book"></i>
+                    <span>&nbsp;Estudiantes</span></a>
             </li>
+            @endif
             {{-- <li class="nav-item">
                 <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapseSystem"
                 aria-expanded="true" aria-controls="collapseSystem">
@@ -157,22 +150,19 @@
                 </div>
             </li> --}}
 
-{{-- 
+
             @if (Auth::user()->usertype == 1)  
              <!-- Divider -->
-            <hr class="sidebar-divider"> --}}
-
-
-             
-            {{-- <li class="nav-item">
+            <hr class="sidebar-divider"> 
+            <li class="nav-item">
                 <a class="nav-link" href="{{ route('usuarios.index') }}">
-                    <i class="fas fa-dot-circle"></i>
+                    <i class="fas fa-user-cog"></i>
                     <span>Usuarios</span></a>
-            </li> --}}
-            {{-- @endif
+            </li>
+            @endif
 
             <!-- Divider -->
-            <hr class="sidebar-divider"> --}}
+            {{-- <hr class="sidebar-divider">  --}}
 
 
             {{-- @if (Auth::user()->usertype != 2)    
@@ -239,6 +229,7 @@
 
                     <!-- Topbar Navbar -->
                     <ul class="navbar-nav ml-auto">
+
                         <div class="topbar-divider d-none d-sm-block"></div>
 
                         <!-- Nav Item - User Information -->

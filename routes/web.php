@@ -2,9 +2,11 @@
 
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\EstudianteController;
+use App\Http\Controllers\UsuarioController;
 use App\Mail\EstudiantesMailable;
 use Illuminate\Support\Facades\Mail;
 use App\Models\Estudiante;
+use App\Http\Middleware\ChecaTipoUsuario;
 
 /*
 |--------------------------------------------------------------------------
@@ -65,7 +67,14 @@ Route::get('/estudiantes/edit/{id}', [EstudianteController::class, 'edit'])->nam
 Route::post('/estudiantes/update/{id}', [EstudianteController::class, 'update'])->name('estudiantes.update');
 Route::get('/estudiantes/edit_status/{id}', [EstudianteController::class, 'edit_status'])->name('estudiantes.edit_status');
 Route::post('/estudiantes/update_status/{id}', [EstudianteController::class, 'update_status'])->name('estudiantes.update_status');
+Route::get('/estudiantes/edit_se/{id}', [EstudianteController::class, 'edit_socioeconomicos'])->name('estudiantes.edit_se');
+Route::post('/estudiantes/censar/{id}', [EstudianteController::class, 'censar'])->name('estudiantes.censar');
 
+Route::resource('usuarios', UsuarioController::class);
+
+Route::get('/estudiantes', function () {
+    dd('dioses');
+})->middleware(ChecaTipoUsuario::class);
 
 
 

@@ -25,6 +25,7 @@ class DatoSocioeconomico extends Model
         'apoyo_gobierno',
         'empleo',
         'gasto_transporte',
+        'observaciones'
     ];  
 
     public function estudiante()

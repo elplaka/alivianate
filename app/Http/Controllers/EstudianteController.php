@@ -374,7 +374,7 @@ class EstudianteController extends Controller
                 //Sólo se copiarán los archivos únicamente cuando estén cargados en el input
                 if ($actaCargada) 
                 {
-                    if ($estudiante->img_acta_nac != "ACTA_OK.pdf")  //Si no se había subido el archivo previamente
+                    if ($estudiante->img_acta_nac != "ACTA_OK.PDF")  //Si no se había subido el archivo previamente
                     {
                         $archivo = 'AC_' . $rfc . '.' . $extActa;
                         $request->img_acta_nac->move('img/actas', $archivo);
@@ -382,7 +382,7 @@ class EstudianteController extends Controller
                 }  
                 if ($comprobanteCargado)
                 {
-                    if ($estudiante->img_comprobante_dom != "COMPROBANTE_OK.pdf")  //Si no se había subido el archivo previamente
+                    if ($estudiante->img_comprobante_dom != "COMPROBANTE_OK.PDF")  //Si no se había subido el archivo previamente
                     {
                         $archivo = 'CO_' . $rfc . '.' . $extComprobante;
                         $request->img_comprobante_dom->move('img/comprobantes', $archivo);
@@ -390,7 +390,7 @@ class EstudianteController extends Controller
                 }
                 if ($identificacionCargada)
                 {
-                    if ($estudiante->img_identificacion != "ID_OK.pdf")  //Si no se había subido el archivo previamente
+                    if ($estudiante->img_identificacion != "ID_OK.PDF")  //Si no se había subido el archivo previamente
                     {
                         $archivo = 'ID_' . $rfc . '.' . $extIdentificacion;
                         $request->img_identificacion->move('img/identificaciones', $archivo);
@@ -398,7 +398,7 @@ class EstudianteController extends Controller
                 }
                 if ($kardexCargado)
                 {
-                    if ($estudiante->img_kardex != "KARDEX_OK.pdf")  //Si no se había subido el archivo previamente
+                    if ($estudiante->img_kardex != "KARDEX_OK.PDF")  //Si no se había subido el archivo previamente
                     {
                         $archivo = 'KX_' . $rfc . '.' . $extKardex;
                         $request->img_kardex->move('img/kardex', $archivo);
@@ -731,10 +731,18 @@ class EstudianteController extends Controller
         else return view('estudiantes/operacion_invalida'); 
     }
 
-    public function index()
+    public function index(Request $request)
     {
         $estudiantes = Estudiante::all();
-        return view('estudiantes.index', compact('estudiantes'));
+        $searchR = "";
+
+        if ($request->has('search'))
+        {
+            $estudiantes = Estudiante::where('nombre','like',"%{$request->search}%")->orWhere('primer_apellido', 'like',"%{$request->search}%")->orWhere('segundo_apellido', 'like',"%{$request->search}%")->get(); 
+            $searchR = mb_strtoupper($request->search); 
+        } 
+
+        return view('estudiantes.index', compact('estudiantes', 'searchR'));
     }
 
     public function edit($id)
@@ -769,31 +777,31 @@ class EstudianteController extends Controller
         }
         if (isset($request->img_acta_nac)) 
         {
-            $extActa = $request->img_acta_nac->getClientOriginalExtension();
+            $extActa = strtoupper($request->img_acta_nac->getClientOriginalExtension());
             $archivoActa = 'AC_' . $rfc . '.' . $extActa;
             $request->img_acta_nac->move('img/actas', $archivoActa);
         } 
         if (isset($request->img_comprobante_dom)) 
         {
-            $extComprobante = $request->img_comprobante_dom->getClientOriginalExtension();
+            $extComprobante = strtoupper($request->img_comprobante_dom->getClientOriginalExtension());
             $archivoComprobante = 'CO_' . $rfc . '.' . $extComprobante;
             $request->img_comprobante_dom->move('img/comprobantes', $archivoComprobante);
         }
         if (isset($request->img_identificacion)) 
         {
-            $extIdentificacion = $request->img_identificacion->getClientOriginalExtension();
+            $extIdentificacion = strtoupper($request->img_identificacion->getClientOriginalExtension());
             $archivoIdentificacion = 'ID_' . $rfc . '.' . $extIdentificacion;
             $request->img_identificacion->move('img/identificaciones', $archivoIdentificacion);
         }
         if (isset($request->img_kardex)) 
         {
-            $extKardex = $request->img_kardex->getClientOriginalExtension();
+            $extKardex = strtoupper($request->img_kardex->getClientOriginalExtension());
             $archivoKardex = 'ID_' . $rfc . '.' . $extKardex;
             $request->img_kardex->move('img/kardex', $archivoKardex);
         } 
         if (isset($request->img_constancia)) 
         {
-            $extConstancia = $request->img_constancia->getClientOriginalExtension();
+            $extConstancia = strtoupper($request->img_constancia->getClientOriginalExtension());
             $archivoConstancia = 'CN_' . $rfc . '.' . $extConstancia;
             $request->img_constancia->move('img/constancias', $archivoConstancia);
         } 
@@ -823,7 +831,8 @@ class EstudianteController extends Controller
             'img_constancia' => $archivoConstancia,
         ]);
 
-        return redirect()->back()->with('message', 'Información ACTUALIZADA con éxito!')->with('msg_type', 'success');
+        //return redirect()->back()->with('message', 'Información ACTUALIZADA con éxito!')->with('msg_type', 'success');
+        return redirect()->route('estudiantes.index')->with('message', 'Estudiante ACTUALIZADO con éxito!')->with('msg_type', 'success');
     }
 
     public function edit_status($id)
@@ -844,5 +853,42 @@ class EstudianteController extends Controller
         ]);
 
         return redirect()->route('estudiantes.index')->with('message', 'Estatus ACTUALIZADO con éxito!')->with('msg_type', 'success');
+    }
+
+    public function edit_socioeconomicos($id)
+    {
+        $estudiante = Estudiante::where('id', $id)->first();
+        $techos = Techo::all();
+        $montos = MontoMensual::all(); 
+
+        return view('estudiantes.edit_se', compact('estudiante', 'techos', 'montos'));
+    }
+
+    public function censar(Request $request, $id)
+    {
+        // dd($request);
+        $validatedData = $request->validate([
+            'observaciones' => ['max:255'], 
+        ]);
+
+        $observaciones = mb_strtoupper(trim($request->observaciones));
+
+        
+        $estudiante = Estudiante::where('id', $id)->first();
+        if (isset($observaciones) && strlen(trim($observaciones)) > 0)  //Actualiza el campo de observaciones sólo cuando haya texto
+        {
+            $estudiante->socioeconomico->update([
+                'observaciones' => $observaciones
+            ]);
+        }
+
+        if ($estudiante->cve_status == 2)  //Si tiene estatus de REVISADO 
+        {
+            $estudiante->update([
+                'cve_status' => 3  //Estatus de CENSADO
+            ]);
+        }
+
+        return redirect()->route('estudiantes.index')->with('message', 'Estudiante CENSADO con éxito!')->with('msg_type', 'success');
     }
  }
